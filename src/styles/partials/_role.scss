@@ -1,0 +1,126 @@
+.main {
+  flex: 1;
+  /* Top padding is deliberately tighter than the sides and bottom: it pulls the dev-header,
+     always the first child, closer to the page edge so the column does not open with a gap. */
+  padding: 10px 24px 22px 13px;
+  background: #fff;
+  min-width: 0;
+}
+
+.role {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 10px;
+  page-break-inside: avoid;
+  break-inside: avoid;
+}
+
+.role-logo {
+  width: 34px;
+  height: 34px;
+  border-radius: 7px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  overflow: hidden;
+  background: #ffffff;
+
+  img {
+    width: 28px;
+    height: 28px;
+    object-fit: contain;
+  }
+
+  /* Craft is a horizontal wordmark with no internal padding, so object-fit shrinks it
+     aggressively inside the square tile. Scale to the largest size that still sits within the
+     34x34 bounds: no cropping, no distortion. */
+  img[src$='Craft.svg'] {
+    transform: scale(1.2);
+  }
+}
+
+.role-body {
+  flex: 1;
+  min-width: 0;
+}
+
+.role-title {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--color-text-primary);
+  line-height: 1.2;
+  margin: 0 0 1px 0;
+  letter-spacing: -0.015em;
+}
+
+.role-company {
+  font-size: 9.5px;
+  color: var(--color-text-secondary);
+  font-weight: 500;
+  margin-bottom: 2px;
+}
+
+.role-meta {
+  display: flex;
+  gap: 14px;
+  font-size: 8px;
+  color: var(--color-text-secondary);
+  margin-bottom: 5px;
+}
+
+.role-summary {
+  font-size: 8.5px;
+  color: var(--color-text-body);
+  line-height: 1.55;
+  margin-bottom: 4px;
+  font-weight: 400;
+}
+
+/* A titled subsection within a role. */
+.sub {
+  margin-top: 4px;
+
+  h4 {
+    font-size: 8.5px;
+    font-weight: 600;
+    color: var(--color-text-primary);
+    margin: 0 0 2px 0;
+    letter-spacing: 0.01em;
+  }
+
+  p,
+  li {
+    font-size: 8.5px;
+    color: var(--color-text-body);
+    line-height: 1.55;
+    margin: 0 0 3px 0;
+    font-weight: 400;
+  }
+
+  ol {
+    padding-left: 13px;
+    margin: 2px 0 3px 0;
+
+    li {
+      margin-bottom: 2px;
+      color: var(--color-text-muted);
+      font-size: 8.5px;
+      font-weight: 500;
+
+      strong {
+        color: var(--color-text-primary);
+        font-weight: 600;
+      }
+    }
+  }
+
+  code {
+    font-family: var(--font-mono);
+    font-size: 7.5px;
+    background: var(--color-chip-bg);
+    padding: 1px 3px;
+    border-radius: 2px;
+    color: var(--color-chip-text);
+  }
+}

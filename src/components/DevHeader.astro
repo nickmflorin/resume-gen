@@ -1,0 +1,28 @@
+---
+import { icon } from '../lib/assets';
+
+/*
+ * The GitHub-flavored header above a run of main-column content: a branch selector and a file
+ * breadcrumb (`nickmflorin / src / experience.ts`).
+ */
+interface Props {
+  file: string;
+  branch?: string;
+  /** Set on a header that follows earlier content on the same sheet, to open up the spacing. */
+  spaced?: boolean;
+}
+
+const { file, branch = 'main', spaced = false } = Astro.props;
+---
+
+<div class={spaced ? 'dev-header dev-header-spaced' : 'dev-header'}>
+  <span class='branch-badge'>
+    <img class='bb-icon-branch' src={icon('CodeBranch')} alt='' />
+    <span>{branch}</span>
+    <img class='bb-icon-caret' src={icon('CaretDown')} alt='' />
+  </span>
+  <span class='dev-path'>
+    <span class='p-dir'>nickmflorin</span><span class='p-sep'>/</span><span class='p-dir'>src</span
+    ><span class='p-sep'>/</span><span class='p-file'>{file}</span>
+  </span>
+</div>

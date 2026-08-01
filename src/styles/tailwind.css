@@ -1,0 +1,49 @@
+/* Tailwind wiring: theme tokens and utilities, DELIBERATELY NO PREFLIGHT. Preflight's base reset
+   would restyle a document whose typography is tuned to fractions of a pixel for print, and this
+   resume sets its own reset in `partials/_base.scss` anyway.
+
+   `@theme static` (not plain `@theme`): Tailwind tree-shakes unused theme variables out of :root,
+   which would break the SCSS below that references them as var(--color-*). `static` forces every
+   token declared here to be emitted as a real custom property. This block is therefore the single
+   source of truth for the palette, the fonts, and the sheet geometry: to recolor or resize
+   anything, edit the value here and nowhere else.
+
+   The palette was extracted from Branding2.sketch. */
+@import 'tailwindcss/theme.css' layer(theme);
+@import 'tailwindcss/utilities.css';
+
+@theme static {
+  /* text */
+  --color-text-primary: #272727;
+  --color-text-secondary: #565f6a;
+  --color-text-dark: #23282e;
+  --color-text-body: #2a2d31;
+  --color-text-muted: #3b3b3b;
+
+  /* lines, links, chips */
+  --color-link: #0869da;
+  --color-border-strong: #969696;
+  --color-border-soft: #d8dee4;
+  --color-chip-bg: #f5f7f9;
+  --color-chip-border: rgba(27, 30, 35, 0.15);
+  --color-chip-text: #23282e;
+
+  /* accents — the skill-bar fills read from these in tier order */
+  --color-accent-magenta: #c5528b;
+  --color-accent-blue: #2f78c5;
+  --color-accent-yellow: #f0df59;
+  --color-accent-red: #ef5038;
+  --color-accent-brown: #a5835a;
+  --color-accent-orange: #e69e35;
+  --color-accent-green: #0eb768;
+  --color-accent-lime: #77bf43;
+
+  --font-sans:
+    'Mona Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+  --font-mono: 'SF Mono', Monaco, Consolas, monospace;
+
+  /* Sheet geometry. US Letter at exactly one sheet per page. */
+  --spacing-sheet-width: 8.5in;
+  --spacing-sheet-height: 11in;
+  --spacing-sidebar: 2.42in;
+}

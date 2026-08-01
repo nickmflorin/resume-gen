@@ -1,0 +1,36 @@
+---
+import type { Sheet } from '../data/types';
+import { degreesByKey } from '../data/education';
+import { rolesByKey } from '../data/experience';
+import DevHeader from './DevHeader.astro';
+import Education from './Education.astro';
+import Role from './Role.astro';
+import Sidebar from './Sidebar.astro';
+
+/*
+ * One physical 8.5x11 sheet: the sidebar, then the main column's blocks in order. A sheet is
+ * fixed-size and clips its overflow, so content that does not fit is visibly cut off rather than
+ * silently reflowed onto another page.
+ */
+interface Props {
+  sheet: Sheet;
+}
+
+const { sheet } = Astro.props;
+---
+
+<div class='page'>
+  <Sidebar intro={sheet.intro} sections={sheet.sections} />
+  <main class='main'>
+    {
+      sheet.main.map((block, index) => (
+        <>
+          <DevHeader file={block.file} spaced={index > 0} />
+          {block.kind === 'roles'
+            ? rolesByKey(block.roles).map(role => <Role role={role} />)
+            : degreesByKey(block.degrees).map(degree => <Education degree={degree} />)}
+        </>
+      ))
+    }
+  </main>
+</div>

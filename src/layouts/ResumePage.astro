@@ -1,0 +1,30 @@
+---
+/* Tailwind's theme tokens come first so the SCSS below can reference them as CSS custom
+   properties, then the design system itself. Vite compiles the SCSS with dart-sass: HMR under
+   `astro dev`, emitted into `_astro/*.css` by `astro build`. */
+import '../styles/tailwind.css';
+import '../styles/style.scss';
+
+interface Props {
+  title: string;
+  /**
+   * Set on the browsing view, which stacks every sheet vertically and draws a boundary between
+   * them. The per-sheet documents that the PDF renderer consumes leave this off.
+   */
+  stacked?: boolean;
+}
+
+const { title, stacked = false } = Astro.props;
+---
+
+<!doctype html>
+<html lang='en'>
+  <head>
+    <meta charset='utf-8' />
+    <meta name='viewport' content='width=device-width, initial-scale=1.0' />
+    <title>{title}</title>
+  </head>
+  <body class={stacked ? 'stacked' : undefined}>
+    <slot />
+  </body>
+</html>

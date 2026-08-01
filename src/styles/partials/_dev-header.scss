@@ -1,0 +1,74 @@
+.dev-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--color-text-secondary);
+  margin-bottom: 14px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--color-border-soft);
+}
+
+/* A second header on the same sheet (education beneath experience) needs room above it; the
+   first one sits flush against the top padding of the main column. */
+.dev-header-spaced {
+  margin-top: 14px;
+}
+
+/* GitHub-style branch selector: [branch icon] main [caret] */
+.branch-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: #ffffff;
+  border: 1px solid var(--color-border-soft);
+  border-radius: 6px;
+  padding: 6px 9px;
+  font-family: var(--font-sans);
+  font-size: 10px;
+  line-height: 1;
+  color: var(--color-text-primary);
+  font-weight: 600;
+  letter-spacing: -0.01em;
+
+  .bb-icon-branch {
+    width: 9px;
+    height: 9px;
+    display: block;
+    flex-shrink: 0;
+    transform: translateY(-1px);
+  }
+
+  .bb-icon-caret {
+    width: 7px;
+    height: 7px;
+    display: block;
+    flex-shrink: 0;
+    opacity: 0.75;
+  }
+}
+
+/* GitHub-style breadcrumb: blue directories, gray separators, bold dark filename. */
+.dev-path {
+  font-family: var(--font-sans);
+  font-size: 11px;
+  line-height: 1.2;
+  display: inline-flex;
+  align-items: baseline;
+  letter-spacing: -0.01em;
+
+  .p-dir {
+    color: var(--color-link);
+    font-weight: 500;
+  }
+
+  .p-sep {
+    color: var(--color-text-secondary);
+    margin: 0 5px;
+    font-weight: 400;
+  }
+
+  .p-file {
+    color: var(--color-text-primary);
+    font-weight: 600;
+  }
+}

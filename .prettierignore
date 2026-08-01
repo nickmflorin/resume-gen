@@ -1,0 +1,7 @@
+build/
+node_modules/
+package-lock.json
+
+# Frozen snapshot of the pre-Astro resume. Kept byte-for-byte as a record; reformatting it
+# would defeat the point of having it.
+content/reference/

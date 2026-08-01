@@ -1,0 +1,25 @@
+@page {
+  size: Letter;
+  margin: 0;
+}
+
+* {
+  box-sizing: border-box;
+  /* Force background colors and images to print. Without this Chrome's PDF export strips them
+     and the skill progress bars render as empty tracks. */
+  -webkit-print-color-adjust: exact !important;
+  print-color-adjust: exact !important;
+  color-adjust: exact !important;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  font-family: var(--font-sans);
+  font-size: 9.5px;
+  line-height: 1.4;
+  color: var(--color-text-primary);
+  background: #fff;
+  -webkit-font-smoothing: antialiased;
+}

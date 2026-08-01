@@ -1,0 +1,26 @@
+// Mona Sans, vendored into public/assets/fonts/ so a build renders identically on any machine
+// and inside headless Chrome, neither of which can be relied on to have the font installed.
+// Variable fonts covering the full 200-900 weight axis; the resume uses 400 through 700.
+//
+// Licensed under the SIL Open Font License 1.1; the license text ships alongside the files at
+// public/assets/fonts/OFL.txt.
+//
+// The URLs are root-absolute so Vite resolves them against public/ in dev. `astro build` emits
+// this CSS into _astro/, where a root-absolute URL would break over file://, so
+// scripts/postbuild_relativize.py rewrites them to ../assets/... in the built output.
+
+@font-face {
+  font-family: 'Mona Sans';
+  src: url('/assets/fonts/mona-sans-vf.woff2') format('woff2-variations');
+  font-weight: 200 900;
+  font-style: normal;
+  font-display: block;
+}
+
+@font-face {
+  font-family: 'Mona Sans';
+  src: url('/assets/fonts/mona-sans-vf-italic.woff2') format('woff2-variations');
+  font-weight: 200 900;
+  font-style: italic;
+  font-display: block;
+}

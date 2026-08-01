@@ -1,0 +1,38 @@
+/* One sheet, exactly one 8.5in x 11in page. Each per-sheet document contains a single .page, so
+   its PDF export is guaranteed to be one page with no mid-role break. Overflow is hidden rather
+   than flowed, which makes content that does not fit visibly clipped instead of silently
+   spilling. */
+.page {
+  width: var(--spacing-sheet-width);
+  height: var(--spacing-sheet-height);
+  display: flex;
+  overflow: hidden;
+  page-break-after: always;
+  break-after: page;
+}
+
+.page:last-child {
+  page-break-after: auto;
+  break-after: auto;
+}
+
+/* The browsing view stacks every sheet in one document. On screen, separate them so page
+   boundaries are obvious while judging whether content fits; in print, they butt up exactly as
+   the per-sheet documents do. */
+@media screen {
+  body.stacked {
+    background: #eef1f4;
+    padding: 24px 0;
+
+    .page {
+      margin: 0 auto 24px;
+      background: #fff;
+      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.12);
+      outline: 1px solid var(--color-border-soft);
+    }
+
+    .page:last-child {
+      margin-bottom: 0;
+    }
+  }
+}

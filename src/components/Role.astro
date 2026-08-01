@@ -1,0 +1,49 @@
+---
+import type { Role } from '../data/types';
+import { logo } from '../lib/assets';
+import Pills from './Pills.astro';
+
+interface Props {
+  role: Role;
+}
+
+const { role } = Astro.props;
+
+/* Summary and section copy carry inline HTML (<em>, <strong>, <code>) and are authored as
+   indented template literals in the data files, so collapse the authoring whitespace before it
+   reaches the markup. */
+const collapse = (text: string) => text.replace(/\s+/g, ' ').trim();
+---
+
+<div class='role'>
+  <div class='role-logo'>
+    <img src={logo(role.logo)} alt={role.company} />
+  </div>
+  <div class='role-body'>
+    <p class='role-title'>{role.title}</p>
+    <div class='role-company'>{role.company}</div>
+    <div class='role-meta'>
+      <span>{role.dates}</span>
+      <span>{role.location}</span>
+    </div>
+    {role.summary.map(paragraph => <p class='role-summary' set:html={collapse(paragraph)} />)}
+    {
+      role.sections?.map(section => (
+        <div class='sub'>
+          <h4>{section.heading}</h4>
+          {section.body?.map(paragraph => (
+            <p set:html={collapse(paragraph)} />
+          ))}
+          {section.items && (
+            <ol>
+              {section.items.map(item => (
+                <li set:html={collapse(item)} />
+              ))}
+            </ol>
+          )}
+        </div>
+      ))
+    }
+    <Pills pills={role.pills} where='main' />
+  </div>
+</div>

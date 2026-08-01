@@ -1,0 +1,17 @@
+---
+/*
+ * A wrapped row of technology chips. `where` selects the sidebar variant (`s-pill`, used for
+ * skill groups) or the main-column variant (`m-pill`, used under a role).
+ */
+interface Props {
+  pills: string[];
+  where?: 'sidebar' | 'main';
+}
+
+const { pills, where = 'main' } = Astro.props;
+const prefix = where === 'sidebar' ? 's' : 'm';
+---
+
+<div class={`${prefix}-pills`}>
+  {pills.map(pill => <span class={`${prefix}-pill`}>{pill}</span>)}
+</div>

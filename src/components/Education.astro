@@ -1,0 +1,26 @@
+---
+import type { Degree } from '../data/types';
+import { logo } from '../lib/assets';
+
+interface Props {
+  degree: Degree;
+}
+
+const { degree } = Astro.props;
+---
+
+<div class='edu'>
+  <div class='edu-logo'>
+    <img src={logo(degree.logo)} alt={degree.school} />
+  </div>
+  <div class='edu-body'>
+    <p class='edu-degree'>{degree.degree}</p>
+    <div class='edu-school'>{degree.school}</div>
+    <div class='edu-meta'>
+      <span>{degree.dates}</span>
+      <span>{degree.location}</span>
+      {degree.gpa && <span>{degree.gpa}</span>}
+    </div>
+    <div class='edu-desc' set:html={degree.description} />
+  </div>
+</div>

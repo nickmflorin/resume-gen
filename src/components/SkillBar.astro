@@ -1,0 +1,24 @@
+---
+import type { Proficiency } from '../data/types';
+
+interface Props {
+  name: string;
+  level: Proficiency;
+}
+
+const { name, level } = Astro.props;
+
+/* The tier drives both the badge text and the fill width, which lives in CSS as `.fill-<level>`. */
+const LABELS: Record<Proficiency, string> = {
+  expert: 'Expert',
+  advanced: 'Advanced',
+  proficient: 'Proficient',
+  familiar: 'Familiar',
+};
+---
+
+<div class='skill-row'>
+  <span class='skill-name'>{name}</span>
+  <div class='skill-track'><div class={`skill-fill fill-${level}`}></div></div>
+  <span class='skill-badge'>{LABELS[level]}</span>
+</div>

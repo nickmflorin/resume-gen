@@ -1,0 +1,57 @@
+.skill-row {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  margin-bottom: 3px;
+}
+
+.skill-name {
+  font-size: 8px;
+  color: var(--color-text-dark);
+  font-weight: 500;
+  width: 72px;
+  flex-shrink: 0;
+}
+
+.skill-track {
+  flex: 1;
+  height: 3px;
+  background: var(--color-border-soft);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.skill-fill {
+  height: 100%;
+  border-radius: 2px;
+}
+
+/* One rule per proficiency tier; the tier name comes straight from the data. */
+.fill-expert {
+  background: var(--color-accent-magenta);
+  width: 100%;
+}
+
+.fill-advanced {
+  background: var(--color-accent-blue);
+  width: 78%;
+}
+
+.fill-proficient {
+  background: var(--color-accent-brown);
+  width: 55%;
+}
+
+.fill-familiar {
+  background: var(--color-accent-orange);
+  width: 35%;
+}
+
+.skill-badge {
+  font-size: 7px;
+  color: var(--color-text-secondary);
+  width: 42px;
+  text-align: right;
+  flex-shrink: 0;
+  font-weight: 500;
+}

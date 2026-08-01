@@ -1,0 +1,24 @@
+---
+/*
+ * One standalone document per sheet: page-1.html, page-2.html, page-3.html. The PDF renderer
+ * prints each of these separately and concatenates the results, which is what makes a mid-role
+ * page break impossible.
+ */
+import Sheet from '../components/Sheet.astro';
+import { PROFILE } from '../data/profile';
+import { SHEETS } from '../data/pages';
+import ResumePage from '../layouts/ResumePage.astro';
+
+export function getStaticPaths() {
+  return SHEETS.map((sheet, index) => ({
+    params: { sheet: sheet.id },
+    props: { sheet, number: index + 1 },
+  }));
+}
+
+const { sheet, number } = Astro.props;
+---
+
+<ResumePage title={`${PROFILE.name} - Resume - Page ${number}`}>
+  <Sheet sheet={sheet} />
+</ResumePage>

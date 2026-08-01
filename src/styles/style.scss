@@ -1,0 +1,15 @@
+// The resume's design system, authored in SCSS and compiled by Vite (dart-sass) when imported
+// from `src/layouts/ResumePage.astro`: HMR in dev, emitted into `_astro/*.css` by `astro build`.
+//
+// Every color, font, and sheet dimension referenced below is a `@theme static` token declared in
+// `tailwind.css`. Add new styles to the partial that owns the component, or add a partial here.
+
+@use 'partials/fonts';
+@use 'partials/base';
+@use 'partials/page';
+@use 'partials/sidebar';
+@use 'partials/skills';
+@use 'partials/pills';
+@use 'partials/dev-header';
+@use 'partials/role';
+@use 'partials/education';

@@ -1,0 +1,15 @@
+---
+/*
+ * The browsing view: every sheet stacked in one document, for reading the resume on screen and
+ * for the single-file bundle. It is generated from the same data as the per-sheet documents, so
+ * it can never drift from what the PDF renders.
+ */
+import Sheet from '../components/Sheet.astro';
+import { PROFILE } from '../data/profile';
+import { SHEETS } from '../data/pages';
+import ResumePage from '../layouts/ResumePage.astro';
+---
+
+<ResumePage title={`${PROFILE.name} - Resume`} stacked>
+  {SHEETS.map(sheet => <Sheet sheet={sheet} />)}
+</ResumePage>

@@ -1,0 +1,76 @@
+---
+import type { SidebarSection } from '../data/types';
+import { ABOUT, CONTACT, HIGHLIGHTS, PROFILE } from '../data/profile';
+import { icon, logo } from '../lib/assets';
+import Pills from './Pills.astro';
+import SkillBar from './SkillBar.astro';
+
+interface Props {
+  /** Render the about/highlights/contact block. True on the opening sheet only. */
+  intro: boolean;
+  sections: SidebarSection[];
+}
+
+const { intro, sections } = Astro.props;
+
+const collapse = (text: string) => text.replace(/\s+/g, ' ').trim();
+---
+
+<aside class='sidebar'>
+  <div class='profile'>
+    <img class='profile-photo' src={logo(PROFILE.photo)} alt={PROFILE.name} />
+    <div class='profile-name'>{PROFILE.name}</div>
+    <div class='profile-role'>{PROFILE.title}</div>
+    <div class='profile-handle'>{PROFILE.handle}</div>
+  </div>
+
+  {
+    intro && (
+      <>
+        <p class='s-heading'>About</p>
+        {ABOUT.map(paragraph => (
+          <p class='about' set:html={collapse(paragraph)} />
+        ))}
+
+        <ul class='bullets'>
+          {HIGHLIGHTS.map(highlight => (
+            <li>
+              <span class='dot'>
+                <img src={icon('Plus')} alt='' />
+              </span>
+              {highlight}
+            </li>
+          ))}
+        </ul>
+
+        <hr class='sdiv' />
+
+        <p class='s-heading'>Contact</p>
+        <ul class='contact-list'>
+          {CONTACT.map(entry => (
+            <li>
+              <span class='ci'>
+                <img src={icon(entry.icon)} alt='' />
+              </span>
+              {entry.text}
+            </li>
+          ))}
+        </ul>
+      </>
+    )
+  }
+
+  {
+    sections.map((section, index) => (
+      <>
+        {(intro || index > 0) && <hr class='sdiv' />}
+        <p class='s-heading'>{section.heading}</p>
+        {section.kind === 'bars' ? (
+          section.bars.map(bar => <SkillBar name={bar.name} level={bar.level} />)
+        ) : (
+          <Pills pills={section.pills} where='sidebar' />
+        )}
+      </>
+    ))
+  }
+</aside>
