@@ -36,13 +36,23 @@ Two sources were combined on 2026-08-01:
   overflow is silently clipped.
 - **2026-08-01: `content/` holds local records that are not build inputs.** Motivated by losing
   access to the systems the material came from. Nothing in it renders.
-- **2026-08-01: Mona Sans is vendored (needs Nick's sign-off).** The original `style.css` asked for
-  Mona Sans but nothing ever shipped it and it is not installed on Nick's machine, so every PDF to
-  date silently rendered in San Francisco via the `-apple-system` fallback. The font is now vendored
-  into `public/assets/fonts/` (OFL) so builds are reproducible anywhere, including inside headless
-  Chrome. **This changes rendering:** Mona Sans is narrower, so content takes roughly 7% less
-  vertical height than the previous exports. To revert, drop the `@use 'partials/fonts'` line from
-  `src/styles/style.scss`.
+- **2026-08-01: Mona Sans is vendored — CONFIRMED by Nick.** The original `style.css` asked for Mona
+  Sans but nothing ever shipped it and it is not installed on Nick's machine, so every PDF to date
+  silently rendered in San Francisco via the `-apple-system` fallback. The font is now vendored into
+  `public/assets/fonts/` (OFL) so builds are reproducible anywhere, including inside headless
+  Chrome. Nick compared the exports and kept it.
+
+  Note the split of responsibility, since it is easy to misread: `--font-sans` in `tailwind.css`
+  always _requests_ Mona Sans; `partials/_fonts.scss` (pulled in by the `@use 'partials/fonts'` line
+  in `style.scss`) is what _supplies_ it via `@font-face`. Removing the `@use` does not select a
+  different font, it just leaves the request unsatisfiable so the stack falls through to
+  `-apple-system`. That is the old behavior, and it is the revert path if ever wanted.
+
+  **Layout consequence:** Mona Sans is narrower at the same pixel size, so lines fit more
+  characters, paragraphs wrap onto fewer lines, and every sheet ends higher. No spacing,
+  line-height, or margin was changed. Measured free space after the switch: page 1 main 1.07in /
+  sidebar 1.36in; page 2 main 1.71in / sidebar 0.75in; page 3 main 2.53in / sidebar 9.07in.
+
 - **2026-08-01: `Nick Florin2` corrected to `Nick Florin`.** The name was a leftover render-test
   string in all three source pages. This is the only content difference between the original HTML
   and the port; the rendered text is otherwise word-for-word identical.
@@ -57,7 +67,15 @@ Two sources were combined on 2026-08-01:
 - [x] Scaffold: Astro app, data model, components, styles, build scripts, docs.
 - [x] Port verified: class structure and rendered text identical to the original three pages.
 - [x] Distributables: multi-page HTML, single-file HTML, 3-page PDF at 8.5x11in.
-- [ ] Nick to confirm the Mona Sans change (or revert it).
+- [x] Mona Sans confirmed by Nick (2026-08-01) after comparing exports.
+- [x] **Sheets rebalanced (2026-08-01, per Nick)** in `src/data/pages.ts` only; no wording changed.
+      Saracen Energy moved from page 3 to page 2, and the Monorepo & Build / Code Quality & DX
+      sidebar groups moved from page 2 to page 3 to sit with CI/CD & Automation (they read as one
+      build-tooling family). Free space went from 1.07/1.71/2.53in main and 1.36/0.75/9.07in sidebar
+      to **1.07/0.41/3.83in main and 1.36/2.91/6.92in sidebar**. Page 2 is now the dense page with
+      both columns ending together. Note the ceiling here: total sidebar content only fills about
+      2.2 sheets, so some sidebar gap on the last page is structural and cannot be moved away, only
+      filled with new content.
 - [x] **Craft experience record regenerated (2026-08-01)** from `ce-software/craft` while access
       lasted: `content/craft-portfolio.md` (narrative, provenance-marked, PR-cited) plus
       `content/craft-pr-log.md` (all 1,255 authored PRs, chronological). Deliberately NOT wired into

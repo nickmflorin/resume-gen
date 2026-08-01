@@ -37,26 +37,27 @@ export const SHEETS: Sheet[] = [
       ARCHITECTURAL_PATTERNS,
       UI_AND_COMPONENT_LIBRARIES,
       TESTING,
-      MONOREPO_AND_BUILD,
-      CODE_QUALITY_AND_DX,
     ],
     main: [
       {
         kind: 'roles',
         file: 'experience.ts',
-        roles: ['northbeam', 'shelfcycle', 'corsha', 'greenbudget', 'nirveda'],
+        roles: ['northbeam', 'shelfcycle', 'corsha', 'greenbudget', 'nirveda', 'saracen'],
       },
     ],
   },
   {
     id: 'page-3',
     intro: false,
-    sections: [CICD_AND_AUTOMATION],
+    /* The build/tooling groups live here rather than on page 2: they read as one family
+       (build -> quality -> automation), and page 2's sidebar is the tightest of the three while
+       this one has the most room. */
+    sections: [MONOREPO_AND_BUILD, CODE_QUALITY_AND_DX, CICD_AND_AUTOMATION],
     main: [
       {
         kind: 'roles',
         file: 'experience.ts',
-        roles: ['saracen', 'atlantic', 'rockcreek', 'pianalytics'],
+        roles: ['atlantic', 'rockcreek', 'pianalytics'],
       },
       {
         kind: 'education',
