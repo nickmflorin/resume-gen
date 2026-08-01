@@ -37,6 +37,50 @@ It builds three distributables into `build/output/` (gitignored, regenerate with
   Mona Sans (vendored, OFL).
 - `scripts/` — `postbuild_relativize.py`, `build_pdf.py`, `build_artifact.py`.
 - `content/` — **local records, not part of the build.** See below.
+- `docs/content-model.md` — the design record for the syndication content model: target Prisma
+  schema, mapping onto `nick.florin`'s existing `Detail` / `NestedDetail`, invariants, and the
+  rationale behind the shape. Required reading before changing the model or migrating it.
+- `docs/content-model.md` — the design record for the syndication content model: target Prisma
+  schema, mapping onto `nick.florin`'s existing `Detail` / `NestedDetail`, invariants, and the
+  rationale behind the shape. Required reading before changing the model or migrating it.
+
+---
+
+## The content model (defined, not yet wired in)
+
+`src/data/content-model.ts` and `src/lib/syndication.ts` define a two-level, syndication-aware
+content tree: roles and degrees own `ContentNode`s, which own `NestedContentNode`s, and every level
+can be withheld from individual channels (LinkedIn, website, resume). It is shaped to migrate 1:1
+into the Prisma schema in `nick.florin`.
+
+**It is not part of the build yet.** The rendered resume still runs on `Role.summary` /
+`Role.sections` in `src/data/experience.ts`. Converting the data onto the new model is the next
+step, and until that happens the two shapes coexist deliberately.
+
+The one rule to remember while it sits unused: the syndication cascade is resolved in exactly one
+place, `resolveSyndication` in `src/lib/syndication.ts`. It masks top-down (a child can never
+re-enable a channel an ancestor withheld) and prunes bottom-up (a node with no content and no
+surviving children would render as a bare title, so it is dropped). Full specification in
+`docs/content-model.md`.
+
+---
+
+## The content model (defined, not yet wired in)
+
+`src/data/content-model.ts` and `src/lib/syndication.ts` define a two-level, syndication-aware
+content tree: roles and degrees own `ContentNode`s, which own `NestedContentNode`s, and every level
+can be withheld from individual channels (LinkedIn, website, resume). It is shaped to migrate 1:1
+into the Prisma schema in `nick.florin`.
+
+**It is not part of the build yet.** The rendered resume still runs on `Role.summary` /
+`Role.sections` in `src/data/experience.ts`. Converting the data onto the new model is the next
+step, and until that happens the two shapes coexist deliberately.
+
+The one rule to remember while it sits unused: the syndication cascade is resolved in exactly one
+place, `resolveSyndication` in `src/lib/syndication.ts`. It masks top-down (a child can never
+re-enable a channel an ancestor withheld) and prunes bottom-up (a node with no content and no
+surviving children would render as a bare title, so it is dropped). Full specification in
+`docs/content-model.md`.
 
 ---
 

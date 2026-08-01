@@ -15,6 +15,7 @@ greenbudget
 headshot
 jhu
 lerna
+linkedin
 microfrontend
 microfrontends
 mona
@@ -30,7 +31,9 @@ nvmrc
 olney
 pianalytics
 pnpm
+polymorphic
 postbuild
+prerender
 prettierignore
 pylint
 pypdf
@@ -47,12 +50,16 @@ scss
 sdiv
 segoe
 shelfcycle
+slugify
 sonarqube
 stylelint
+syndicated
+syndication
 tailwindcss
 trpc
 tsconfig
 turborepo
+uuid
 venv
 virtualenv
 vite

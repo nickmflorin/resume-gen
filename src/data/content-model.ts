@@ -202,18 +202,26 @@ export interface ContentOwner extends Syndicated {
  * tree by accident and quietly publish content that was meant to be withheld.
  * -------------------------------------------------------------------------------------------- */
 
-export interface ResolvedNestedNode extends Omit<NestedContentNode, 'excludedChannels' | 'visible'> {
+export interface ResolvedNestedNode extends Omit<
+  NestedContentNode,
+  'excludedChannels' | 'visible'
+> {
   readonly titleLayout: TitleLayout;
 }
 
-export interface ResolvedNode
-  extends Omit<ContentNode, 'excludedChannels' | 'visible' | 'children' | 'type'> {
+export interface ResolvedNode extends Omit<
+  ContentNode,
+  'excludedChannels' | 'visible' | 'children' | 'type'
+> {
   readonly type: NodeType;
   readonly titleLayout: TitleLayout;
   readonly children: readonly ResolvedNestedNode[];
 }
 
-export interface ResolvedOwner extends Omit<ContentOwner, 'excludedChannels' | 'visible' | 'nodes'> {
+export interface ResolvedOwner extends Omit<
+  ContentOwner,
+  'excludedChannels' | 'visible' | 'nodes'
+> {
   readonly summary: readonly ResolvedNode[];
   readonly content: readonly ResolvedNode[];
 }
