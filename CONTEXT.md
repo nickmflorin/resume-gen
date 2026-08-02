@@ -25,9 +25,11 @@ It builds three distributables into `build/output/` (gitignored, regenerate with
 
 - `src/data/` — **THE CONTENT.** `profile.ts` (name, about, contact), `experience.ts` (every role),
   `skills.ts` (sidebar sections), `education.ts` (degrees), `pages.ts` (which roles and sidebar
-  sections land on which sheet), `types.ts` (the shape of all of it).
+  sections land on which sheet), `types.ts` (the shape of all of it, including the content model).
 - `src/components/` — pure renderers over that data: `Sheet`, `Sidebar`, `Role`, `Education`,
   `DevHeader`, `SkillBar`, `Pills`.
+- `src/lib/` — `normalize.ts` (authoring input → content model, then resolved for a channel),
+  `syndication.ts` (the cascade, and nothing else may implement it), `assets.ts`.
 - `src/layouts/ResumePage.astro` — the document shell; imports the styles.
 - `src/pages/[sheet].astro` — one standalone document per sheet, generated from `SHEETS`.
   `src/pages/index.astro` — every sheet stacked in one document.
@@ -40,47 +42,27 @@ It builds three distributables into `build/output/` (gitignored, regenerate with
 - `docs/content-model.md` — the design record for the syndication content model: target Prisma
   schema, mapping onto `nick.florin`'s existing `Detail` / `NestedDetail`, invariants, and the
   rationale behind the shape. Required reading before changing the model or migrating it.
-- `docs/content-model.md` — the design record for the syndication content model: target Prisma
-  schema, mapping onto `nick.florin`'s existing `Detail` / `NestedDetail`, invariants, and the
-  rationale behind the shape. Required reading before changing the model or migrating it.
 
 ---
 
-## The content model (defined, not yet wired in)
+## The content model
 
-`src/data/content-model.ts` and `src/lib/syndication.ts` define a two-level, syndication-aware
-content tree: roles and degrees own `ContentNode`s, which own `NestedContentNode`s, and every level
-can be withheld from individual channels (LinkedIn, website, resume). It is shaped to migrate 1:1
-into the Prisma schema in `nick.florin`.
+`src/data/types.ts` and `src/lib/syndication.ts` define a two-level, syndication-aware content tree:
+roles and degrees own `ContentNode`s, which own `NestedContentNode`s, and every level can be
+withheld from individual channels (LinkedIn, website, resume). It is shaped to migrate 1:1 into the
+Prisma schema in `nick.florin`.
 
-**It is not part of the build yet.** The rendered resume still runs on `Role.summary` /
-`Role.sections` in `src/data/experience.ts`. Converting the data onto the new model is the next
-step, and until that happens the two shapes coexist deliberately.
+**It drives the build.** `experience.ts` and `education.ts` are authored against the `*Input` types;
+`rolesByKey` / `degreesByKey` push them through `normalizeOwner` (which assigns ids, slugs, and
+order indices, applies the defaults, and collapses authoring whitespace) and then
+`resolveSyndication` for the resume channel. Components only ever see `Resolved*` types, so nothing
+withheld can reach the page by accident. Every node currently publishes everywhere; withholding one
+means adding `excludedChannels` to it.
 
-The one rule to remember while it sits unused: the syndication cascade is resolved in exactly one
-place, `resolveSyndication` in `src/lib/syndication.ts`. It masks top-down (a child can never
-re-enable a channel an ancestor withheld) and prunes bottom-up (a node with no content and no
-surviving children would render as a bare title, so it is dropped). Full specification in
-`docs/content-model.md`.
-
----
-
-## The content model (defined, not yet wired in)
-
-`src/data/content-model.ts` and `src/lib/syndication.ts` define a two-level, syndication-aware
-content tree: roles and degrees own `ContentNode`s, which own `NestedContentNode`s, and every level
-can be withheld from individual channels (LinkedIn, website, resume). It is shaped to migrate 1:1
-into the Prisma schema in `nick.florin`.
-
-**It is not part of the build yet.** The rendered resume still runs on `Role.summary` /
-`Role.sections` in `src/data/experience.ts`. Converting the data onto the new model is the next
-step, and until that happens the two shapes coexist deliberately.
-
-The one rule to remember while it sits unused: the syndication cascade is resolved in exactly one
-place, `resolveSyndication` in `src/lib/syndication.ts`. It masks top-down (a child can never
-re-enable a channel an ancestor withheld) and prunes bottom-up (a node with no content and no
-surviving children would render as a bare title, so it is dropped). Full specification in
-`docs/content-model.md`.
+The one rule to remember: the syndication cascade is resolved in exactly one place,
+`resolveSyndication` in `src/lib/syndication.ts`. It masks top-down (a child can never re-enable a
+channel an ancestor withheld) and prunes bottom-up (a node with no content and no surviving children
+would render as a bare title, so it is dropped). Full specification in `docs/content-model.md`.
 
 ---
 
@@ -114,9 +96,11 @@ came from goes away. It is source material for writing the resume; nothing in it
    nowhere else.
 3. **Move content between pages** → edit `SHEETS` in `src/data/pages.ts`.
 
-Inline HTML (`<em>`, `<strong>`, `<code>`) is allowed in prose fields and is rendered as markup.
-Copy is authored as indented template literals; the components collapse authoring whitespace, so
-indentation in the data files is free.
+Inline HTML (`<em>`, `<strong>`, `<code>`) is allowed in prose fields and is rendered as markup, so
+a literal `&` is written `&amp;` — titles included. One node is one paragraph: prose that runs to
+two paragraphs is two nodes, because syndication is decided per paragraph. Copy is authored as
+indented template literals; normalization collapses authoring whitespace, so indentation in the data
+files is free.
 
 ---
 

@@ -4,7 +4,8 @@
  * skill groups) or the main-column variant (`m-pill`, used under a role).
  */
 interface Props {
-  pills: string[];
+  /** Readonly because a role's chips arrive as the `skills` of a resolved content owner. */
+  pills: readonly string[];
   where?: 'sidebar' | 'main';
 }
 

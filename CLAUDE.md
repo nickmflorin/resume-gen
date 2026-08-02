@@ -24,10 +24,11 @@ imported here to keep sessions light.
   HTML without being asked; adding material to it is always safe.
 - **`content/reference/` is frozen.** It is a snapshot of the pre-Astro resume, kept byte-for-byte.
   Never reformat or "fix" it.
-- **Read `docs/content-model.md` before touching `src/data/content-model.ts`,
-  `src/lib/syndication.ts`, or writing any Prisma migration in `nick.florin`.** It holds the target
-  schema, the mapping from the existing `Detail` / `NestedDetail` models, the invariants Postgres
-  cannot enforce, and the reason behind each decision. Several parts of the shape look arbitrary and
-  are not; reversing one without the rationale reintroduces a solved problem.
+- **Read `docs/content-model.md` before touching the content model in `src/data/types.ts`,
+  `src/lib/normalize.ts`, `src/lib/syndication.ts`, or writing any Prisma migration in
+  `nick.florin`.** It holds the target schema, the mapping from the existing `Detail` /
+  `NestedDetail` models, the invariants Postgres cannot enforce, and the reason behind each
+  decision. Several parts of the shape look arbitrary and are not; reversing one without the
+  rationale reintroduces a solved problem.
 - **The syndication cascade lives in exactly one place.** Nothing outside `src/lib/syndication.ts`
   may read `visible` or `excludedChannels`; render from the `Resolved*` types it returns.

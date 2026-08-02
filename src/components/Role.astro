@@ -1,18 +1,59 @@
 ---
-import type { Role } from '../data/types';
+import { NodeType, TitleLayout, type ResolvedNode, type ResolvedRole } from '../data/types';
 import { logo } from '../lib/assets';
 import Pills from './Pills.astro';
 
+/*
+ * One role. The prose arrives already normalized and resolved for the resume channel (see
+ * `rolesByKey`), so this component never decides what is published — only how it looks.
+ */
 interface Props {
-  role: Role;
+  role: ResolvedRole;
 }
 
 const { role } = Astro.props;
+const { summary, content, skills } = role.content;
 
-/* Summary and section copy carry inline HTML (<em>, <strong>, <code>) and are authored as
-   indented template literals in the data files, so collapse the authoring whitespace before it
-   reaches the markup. */
-const collapse = (text: string) => text.replace(/\s+/g, ' ').trim();
+/**
+ * A node's title and content as one string of HTML. Both are HTML — titles carry entities such as
+ * `Bundle Size &amp; First Load Performance` — so both are emitted with `set:html` rather than as
+ * text nodes.
+ *
+ * An INLINE title runs into the content after a dash, which is how every list item reads. A STACKED
+ * title sits above its content; at the top level that is the `<h4>` below, and inside a list it is
+ * a line break.
+ */
+function titled(node: Pick<ResolvedNode, 'title' | 'content' | 'titleLayout'>): string {
+  const body = node.content ?? '';
+  if (node.title === null) {
+    return body;
+  }
+  const title = `<strong>${node.title}</strong>`;
+  if (body === '') {
+    return title;
+  }
+  return node.titleLayout === TitleLayout.Inline ? `${title} - ${body}` : `${title}<br />${body}`;
+}
+
+/*
+ * Precomputed per section to keep the markup below flat. `list` is the element a section's
+ * children render into, null when it has none; `prose` is the section's own paragraph, empty when
+ * it is nothing but a titled list.
+ *
+ * The two list branches below are written out rather than collapsed into an Astro dynamic tag
+ * (`<List>`) on purpose: a dynamic tag renders as a component, and components drop the whitespace
+ * around their slot content, which reformats the emitted HTML.
+ */
+const sections = content.map(node => ({
+  node,
+  list:
+    node.children.length === 0
+      ? null
+      : node.type === NodeType.BulletedList
+        ? ('ul' as const)
+        : ('ol' as const),
+  prose: node.titleLayout === TitleLayout.Inline ? titled(node) : (node.content ?? ''),
+}));
 ---
 
 <div class='role'>
@@ -26,24 +67,30 @@ const collapse = (text: string) => text.replace(/\s+/g, ' ').trim();
       <span>{role.dates}</span>
       <span>{role.location}</span>
     </div>
-    {role.summary.map(paragraph => <p class='role-summary' set:html={collapse(paragraph)} />)}
+    {summary.map(node => <p class='role-summary' set:html={titled(node)} />)}
     {
-      role.sections?.map(section => (
+      sections.map(({ node, list, prose }) => (
         <div class='sub'>
-          <h4>{section.heading}</h4>
-          {section.body?.map(paragraph => (
-            <p set:html={collapse(paragraph)} />
-          ))}
-          {section.items && (
+          {node.title !== null && node.titleLayout === TitleLayout.Stacked && (
+            <h4 set:html={node.title} />
+          )}
+          {prose !== '' && <p set:html={prose} />}
+          {list === 'ul' ? (
+            <ul>
+              {node.children.map(child => (
+                <li set:html={titled(child)} />
+              ))}
+            </ul>
+          ) : list === 'ol' ? (
             <ol>
-              {section.items.map(item => (
-                <li set:html={collapse(item)} />
+              {node.children.map(child => (
+                <li set:html={titled(child)} />
               ))}
             </ol>
-          )}
+          ) : null}
         </div>
       ))
     }
-    <Pills pills={role.pills} where='main' />
+    <Pills pills={skills} where='main' />
   </div>
 </div>
