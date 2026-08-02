@@ -11,3 +11,6 @@ build/output/
 .env
 .env.*
 !.env.example
+
+# Claude Code worktrees. These are local scratch checkouts, not repo content.
+.claude/worktrees/
