@@ -1,20 +1,23 @@
 # The Content Model
 
-Everything needed to carry `src/data/content-model.ts` into the Prisma schema in the `nick.florin`
-repository: the target schema, the field mapping, the invariants Postgres cannot enforce, and the
-reasoning behind each decision.
+Everything needed to carry the content model in `src/data/types.ts` into the Prisma schema in the
+`nick.florin` repository: the target schema, the field mapping, the invariants Postgres cannot
+enforce, and the reasoning behind each decision.
 
-**Read this before changing `src/data/content-model.ts` or `src/lib/syndication.ts`, and read it in
-full before writing any migration in `nick.florin`.** The shape looks arbitrary in places; it is
-not, and the rationale is at the bottom.
+**Read this before changing the model in `src/data/types.ts`, `src/lib/normalize.ts`, or
+`src/lib/syndication.ts`, and read it in full before writing any migration in `nick.florin`.** The
+shape looks arbitrary in places; it is not, and the rationale is at the bottom.
 
 ---
 
 ## Status
 
-- **Types and resolver: written.** `src/data/content-model.ts` and `src/lib/syndication.ts`.
-- **Not wired into the build.** The rendered resume still runs on `Role.summary` / `Role.sections`
-  in `src/data/experience.ts`. Nothing imports the content model yet.
+- **Types, normalization, and resolver: written.** `src/data/types.ts`, `src/lib/normalize.ts`, and
+  `src/lib/syndication.ts`.
+- **It drives the build.** `experience.ts` and `education.ts` are authored against the `*Input`
+  types; `rolesByKey` / `degreesByKey` normalize them into `ContentOwner`s and resolve them for
+  `SyndicationChannel.Resume`, and the components render the `Resolved*` types. The port left the
+  built HTML and the PDF byte-for-byte unchanged, which is what it was for.
 - **Not in Prisma.** `nick.florin` has no syndication concept at all; this is a superset of what
   exists there, so landing it means changing that schema too.
 
@@ -280,9 +283,10 @@ visibility column buys nothing and costs invalidation bugs.
 
 ## Migration plan
 
-1. **Convert this repo's data first.** Rewrite `experience.ts` / `education.ts` onto `ContentInput`,
-   render through `resolveSyndication`, and confirm the built PDF is unchanged. The model is not
-   proven until it has held the real content.
+1. ~~**Convert this repo's data first.**~~ **Done.** `experience.ts` / `education.ts` are authored
+   as `ContentInput`, normalized by `src/lib/normalize.ts`, and rendered through
+   `resolveSyndication`; the built HTML and the PDF came out byte-identical to the pre-port build.
+   What that exercise surfaced is below.
 2. **Settle `shortDescription`** (above). It is the only open question that changes the schema.
 3. **Add the enums and the two models** to `nick.florin`, plus `excludedChannels` on `Experience`
    and `Education` and the back-relations on `Skill` and `User`.
@@ -295,6 +299,35 @@ visibility column buys nothing and costs invalidation bugs.
 6. **Port the resolver** rather than reimplementing it, and port its behavior tests with it.
 
 Steps 4 and 5 are destructive. Snapshot the database first.
+
+### What step 1 surfaced
+
+The whole resume fits the model — every section is one paragraph plus an optional list, every list
+item is a bold label and a sentence — so nothing here required a change to the shape. Four things
+are worth knowing before the Prisma work, though.
+
+**`title` is HTML, not text.** The bold labels on list items contain entities
+(`Bundle Size &amp; First Load Performance`), so titles are rendered with `set:html` exactly like
+`content`. This is not stated in the schema anywhere and cannot be; it is a convention. Rendering a
+title as a text node double-escapes it. Check what `Detail.label` actually holds in `nick.florin`
+before migrating: if those values are plain text, they need escaping on the way in.
+
+**Normalization is a real boundary, not a formality.** `src/lib/normalize.ts` generates slugs from
+titles (per parent, numerically de-duplicated — the same algorithm the `slug` backfill in step 4
+needs), assigns ids as paths (`craft/leadership/rubrics`) so they are stable across builds, stamps
+`order` from array position, and collapses the authoring whitespace of indented template literals.
+It also enforces invariants 2, 3, 4, and 5 by throwing: those are the checks that have to be ported
+to write-time validation in `nick.florin`, since Postgres will not hold them either.
+
+**`titleLayout` never needs to be authored.** Every list item resolves to `INLINE` from its parent's
+`NUMBERED_LIST` type and every section to `STACKED` from having no list parent, so the column is
+null on every node in the resume. That is the derivation working as designed; it also means the
+stored value has never been exercised, only the derived one.
+
+**Summaries and content share one slug namespace.** They are one table with one
+`@@unique([slug, ownerId, ownerType])`, so `normalizeOwner` de-duplicates across both collections
+rather than within each. Worth remembering when backfilling: slugging summaries and details
+independently can collide.
 
 ---
 

@@ -31,7 +31,7 @@ import {
   type ResolvedOwner,
   type SyndicationChannel,
   type Syndicated,
-} from '../data/content-model';
+} from '../data/types';
 
 /** Whether a single level permits the channel, ignoring ancestors and descendants. */
 function permits(node: Syndicated, channel: SyndicationChannel): boolean {

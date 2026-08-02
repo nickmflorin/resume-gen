@@ -1,12 +1,20 @@
 ---
-import type { Degree } from '../data/types';
+import type { ResolvedDegree } from '../data/types';
 import { logo } from '../lib/assets';
 
+/*
+ * One degree. Like `Role`, it receives content already resolved for the resume channel.
+ */
 interface Props {
-  degree: Degree;
+  degree: ResolvedDegree;
 }
 
 const { degree } = Astro.props;
+
+/* A degree's prose is a single line beneath the header, so its summary nodes render as one block
+   rather than a paragraph each. There is one node today; joining keeps a second from disappearing
+   silently if one is ever added. */
+const description = degree.content.summary.map(node => node.content ?? '').join(' ');
 ---
 
 <div class='edu'>
@@ -21,6 +29,6 @@ const { degree } = Astro.props;
       <span>{degree.location}</span>
       {degree.gpa && <span>{degree.gpa}</span>}
     </div>
-    <div class='edu-desc' set:html={degree.description} />
+    <div class='edu-desc' set:html={description} />
   </div>
 </div>
