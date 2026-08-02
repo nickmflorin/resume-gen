@@ -4,7 +4,14 @@
   "[astro]": {
     "editor.defaultFormatter": "esbenp.prettier-vscode"
   },
-  "files.associations": {
-    "*.css": "tailwindcss"
-  }
+  // Tailwind 4's `@theme` is not in the CSS spec, so VS Code's CSS language service reports it as
+  // an unknown at-rule. Silence just that rule rather than disabling CSS validation wholesale.
+  //
+  // Do NOT re-add `"files.associations": { "*.css": "tailwindcss" }` here. That was a Tailwind 3
+  // era workaround, and under Tailwind 4 it routes .css files to the parser bundled inside the
+  // Tailwind extension, which is older than the one VS Code ships and misparses `@theme static`
+  // into a cascade of bogus `{ expected` errors. The extension provides IntelliSense on plain
+  // `css` files without the association.
+  "css.lint.unknownAtRules": "ignore",
+  "scss.lint.unknownAtRules": "ignore"
 }
