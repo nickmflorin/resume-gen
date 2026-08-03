@@ -10,6 +10,7 @@
     "build": "astro build && python3 scripts/postbuild_relativize.py",
     "preview": "astro preview",
     "pdf": "python3 scripts/build_pdf.py",
+    "pills:optimize": "python3 scripts/optimize_pills.py",
     "artifact": "python3 scripts/build_artifact.py",
     "dist": "npm run build && npm run artifact && npm run pdf",
     "format": "prettier --write .",

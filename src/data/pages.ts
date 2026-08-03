@@ -1,5 +1,6 @@
 import type { Sheet } from './types';
 import {
+  AI_TOOLING_AND_AUTOMATION,
   ARCHITECTURAL_PATTERNS,
   CICD_AND_AUTOMATION,
   CLOUD_AND_DATABASES,
@@ -25,18 +26,20 @@ export const SHEETS: Sheet[] = [
   {
     id: 'page-1',
     intro: true,
-    sections: [LANGUAGES_AND_FRAMEWORKS, TOP_SKILLS],
+    sections: [LANGUAGES_AND_FRAMEWORKS, TOP_SKILLS, KEY_STRENGTHS],
     main: [{ kind: 'roles', file: 'experience.ts', roles: ['craft'] }],
   },
   {
     id: 'page-2',
     intro: false,
     sections: [
-      KEY_STRENGTHS,
+      AI_TOOLING_AND_AUTOMATION,
       CLOUD_AND_DATABASES,
       ARCHITECTURAL_PATTERNS,
       UI_AND_COMPONENT_LIBRARIES,
       TESTING,
+      MONOREPO_AND_BUILD,
+      CICD_AND_AUTOMATION,
     ],
     main: [
       {
@@ -52,7 +55,7 @@ export const SHEETS: Sheet[] = [
     /* The build/tooling groups live here rather than on page 2: they read as one family
        (build -> quality -> automation), and page 2's sidebar is the tightest of the three while
        this one has the most room. */
-    sections: [MONOREPO_AND_BUILD, CODE_QUALITY_AND_DX, CICD_AND_AUTOMATION],
+    sections: [CODE_QUALITY_AND_DX],
     main: [
       {
         kind: 'roles',

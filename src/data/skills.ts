@@ -166,6 +166,25 @@ export const CODE_QUALITY_AND_DX: SidebarSection = {
   ],
 };
 
+export const AI_TOOLING_AND_AUTOMATION: SidebarSection = {
+  kind: 'pills',
+  heading: 'AI Tooling & Automation',
+  pills: [
+    'Claude Code',
+    'Claude Design',
+    'Cursor',
+    'GitHub Copilot',
+    'Agentic Workflows',
+    'MCP Integrations',
+    'Context Engineering',
+    'Custom Agents & Skills',
+    'AI Code Review Automation',
+    'Agent Guardrails (ESLint, CI)',
+    'Spec-Driven Development',
+    'Prompt Engineering',
+  ],
+};
+
 export const CICD_AND_AUTOMATION: SidebarSection = {
   kind: 'pills',
   heading: 'CI/CD & Automation',
