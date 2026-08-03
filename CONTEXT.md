@@ -120,7 +120,9 @@ visible boundary, and rebalance `SHEETS` if content runs past the bottom edge.
 
 `npm run dev` — live sheets with HMR. `npm run build` — the multi-page site. `npm run pdf` — the PDF
 (build first). `npm run artifact` — the single-file HTML (build first). `npm run dist` — all three.
-`npm run format` / `format:check` — Prettier.
+`npm run format` / `format:check` — Prettier. `npm run pills:optimize` — reorder each sidebar pill
+section for the fewest rows (measures real widths in headless Chrome against the built CSS, so
+build first; `--dry-run` previews, `--pin 'Heading=N'` keeps a section's first N pills in place).
 
 **Node 22+ is required** (Astro 6). The repo pins it with `.nvmrc`; run `nvm use` in a new shell.
 The machine default is Node 20, so a shell that has not run `nvm use` will fail the build with a

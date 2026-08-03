@@ -39,7 +39,6 @@ import os
 import re
 import subprocess
 import sys
-import tempfile
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 PAGES_DIR = os.path.join(ROOT, "build", "output", "resume_html")
@@ -86,9 +85,15 @@ def parse_sections(source):
 
 # --------------------------------------------------------------------------- browser measurement
 
+# The page measures itself on a poll rather than awaiting fonts.ready/load: under
+# --virtual-time-budget the promise chain is not reliably serviced before the DOM dump, but timers
+# are. Every tick overwrites #MEASURE with the current widths plus document.fonts.status; the dump
+# captures the last tick, and the Python side rejects any capture whose fonts never reached
+# 'loaded' (fallback-font widths run several px wide).
 MEASURE_JS = """
 <script>
-  const measure = () => {
+  document.fonts.load("600 7.5px 'Mona Sans'");
+  const tick = () => {
     const out = [];
     document.querySelectorAll('.s-pills').forEach(container => {
       const style = getComputedStyle(container);
@@ -104,12 +109,12 @@ MEASURE_JS = """
         rows: new Set(pills.map(pill => Math.round(pill.getBoundingClientRect().top))).size,
       });
     });
-    document.getElementById('MEASURE').textContent = btoa(JSON.stringify(out));
+    document.getElementById('MEASURE').textContent = btoa(
+      JSON.stringify({ fonts: document.fonts.status, sections: out })
+    );
   };
-  const loaded = document.readyState === 'complete'
-    ? Promise.resolve()
-    : new Promise(resolve => addEventListener('load', resolve));
-  Promise.all([document.fonts.ready, loaded]).then(() => requestAnimationFrame(measure));
+  setInterval(tick, 50);
+  tick();
 </script>
 """
 
@@ -144,34 +149,47 @@ def measure(section_pill_texts):
     with open(scratch, "w", encoding="utf-8") as f:
         f.write(document)
     try:
-        found = None
+        payload = None
+        stderr_tail = ""
         for attempt in range(3):
-            with tempfile.TemporaryDirectory(prefix="pills-chrome") as profile:
+            try:
                 result = subprocess.run(
                     [
                         CHROME,
                         "--headless=new",
                         "--disable-gpu",
-                        "--no-first-run",
-                        "--user-data-dir=" + profile,
                         "--virtual-time-budget=10000",
                         "--dump-dom",
                         "file://" + scratch,
                     ],
                     capture_output=True,
                     text=True,
+                    timeout=45,
                 )
+            except subprocess.TimeoutExpired:
+                print("Chrome measurement attempt {} hung, retrying...".format(attempt + 1))
+                continue
+            stderr_tail = result.stderr[-2000:]
             found = re.search(r'<div id="MEASURE">([A-Za-z0-9+/=]+)</div>', result.stdout)
             if found:
-                break
-            print("Chrome measurement attempt {} failed, retrying...".format(attempt + 1))
+                candidate = json.loads(base64.b64decode(found.group(1)))
+                if candidate.get("fonts") == "loaded":
+                    payload = candidate
+                    break
+                print(
+                    "Fonts were '{}' at capture on attempt {}, retrying...".format(
+                        candidate.get("fonts"), attempt + 1
+                    )
+                )
+            else:
+                print("Chrome measurement attempt {} failed, retrying...".format(attempt + 1))
     finally:
         os.remove(scratch)
 
-    if not found:
-        sys.stderr.write(result.stderr[-2000:] + "\n")
-        sys.exit("Measurement page produced no result; is Chrome at {}?".format(CHROME))
-    results = json.loads(base64.b64decode(found.group(1)))
+    if payload is None:
+        sys.stderr.write(stderr_tail + "\n")
+        sys.exit("Measurement failed after 3 attempts; is Chrome at {}?".format(CHROME))
+    results = payload["sections"]
     if len(results) != len(section_pill_texts):
         sys.exit("Measured {} sections, expected {}.".format(len(results), len(section_pill_texts)))
     return results
